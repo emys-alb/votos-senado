@@ -4,11 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pypdf2 = "*"
 scrapy = "*"
 
 [dev-packages]
-pypdf2 = "*"
 scrapy = "*"
 
 [requires]
