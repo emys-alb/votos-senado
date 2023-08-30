@@ -1,8 +1,9 @@
 import scrapy
+from scrapy.crawler import CrawlerProcess
 
-url = "https://www25.senado.leg.br/web/atividade/materias/-/materia/158035/votacoes"
+url = ["https://www25.senado.leg.br/web/atividade/materias/-/materia/158035/votacoes"]
 
-class VotacaoScrapper(scrapy.Spider):
+class VotacaoSpider(scrapy.Spider):
     name = "votacao"
     start_urls = url
     custom_settings = {
@@ -14,13 +15,18 @@ class VotacaoScrapper(scrapy.Spider):
     }
 
     def parse(self, response):
-        conteudo_votacao = response.css(".content > .portlet-body > .dl-horizontal > dd:nth-child(2)::text").extract_first()
-        print(conteudo_votacao)
-        
-        for votacao in response.css("#conteudoVotacao6718 > .row-fluid:nth-child(2)"):
-            for linha in votacao.css("table > tbody > tr"):
+        conteudo_votacao = response.css("dl.dl-horizontal:nth-child(4) > dd:nth-child(4)::text")
+
+        for colunas in response.css("div.row-fluid:nth-child(4)"):
+            for votacao in colunas.css(".span4 > table > tbody:nth-child(2) > tr"):
+                obs = votacao.css("td:nth-child(4)::text").extract_first()
                 yield {
-                    "parlamentar" : linha.css("td:nth-child(2)::text").extract_first(),
-                    "voto" : linha.css("td:nth-child(3)::text").extract_first(),
-                    "obs" : linha.css("td:nth-child(4)::text").extract_first()
+                    #"Conteudo": conteudo_votacao.extract_first(),
+                    "parlamentar" : votacao.css("td:nth-child(2)::text").extract_first(),
+                    "voto" : votacao.css("td:nth-child(3)::text").extract_first(),
+                    "obs" : "" if obs is None else obs
                 }
+
+process = CrawlerProcess()
+process.crawl(VotacaoSpider)
+process.start()
