@@ -15,13 +15,19 @@ class VotacaoSpider(scrapy.Spider):
     }
 
     def parse(self, response):
+        #informações gerais da votação
+        data_votacao = response.css("#conteudoSessaoPlenaria25602 > div:nth-child(1) > p:nth-child(1) > span:nth-child(2)::text")
+        status_votacao = response.css(".label::text")
         conteudo_votacao = response.css("dl.dl-horizontal:nth-child(4) > dd:nth-child(4)::text")
 
         for colunas in response.css("div.row-fluid:nth-child(4)"):
             for votacao in colunas.css(".span4 > table > tbody:nth-child(2) > tr"):
                 obs = votacao.css("td:nth-child(4)::text").extract_first()
                 yield {
-                    #"Conteudo": conteudo_votacao.extract_first(),
+                    "data_votacao": data_votacao.extract_first(),
+                    "status_votacao": status_votacao.extract_first(),
+                    "conteudo_votacao": conteudo_votacao.extract_first(),
+                    
                     "parlamentar" : votacao.css("td:nth-child(2)::text").extract_first(),
                     "voto" : votacao.css("td:nth-child(3)::text").extract_first(),
                     "obs" : "" if obs is None else obs
