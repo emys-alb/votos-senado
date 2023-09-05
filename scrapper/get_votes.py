@@ -22,7 +22,8 @@ class PaginaSpider(scrapy.Spider):
             for sessao in table.css("tbody:nth-child(3) > tr"):
                 items = VotacaoItem()
 
-                items["materia"] = sessao.css("td:nth-child(1)::text").get()
+                materia = sessao.css("td:nth-child(1)::text").get()
+                items["materia"] = materia.replace(u'\xa0', u' ')
                 items["link"] = sessao.css("td:nth-child(2) > a::attr(href)").get()
                 items["descricao"] = sessao.css("td:nth-child(2) > a::text").get()
 
@@ -45,6 +46,8 @@ class PaginaSpider(scrapy.Spider):
                 items["parlamentar"] : votacao.css("td:nth-child(2)::text").get()
                 items["voto"] : votacao.css("td:nth-child(3)::text").get()
                 items["obs"] : votacao.css("td:nth-child(4)::text").get()
+
+                yield items
 
 class VotacaoItem(scrapy.Item):
     materia = scrapy.Field()
