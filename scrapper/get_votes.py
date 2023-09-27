@@ -10,7 +10,7 @@ class PaginaSpider(scrapy.Spider):
     start_urls = parse_url(2019, 2023)
     custom_settings = {
         'FEEDS': {
-            'out/votos-all.csv': {
+            'out/votos.csv': {
                 'format': 'csv',
                 'encoding': 'utf8'
             }
@@ -32,17 +32,20 @@ class PaginaSpider(scrapy.Spider):
     def votacao(self, response):
         items = response.meta['items']
 
-        # Informações gerais da votação
-        data_votacao = response.xpath("/html/body/div/div[6]/div/div/div/div/div/div/div/div/div/div[2]/div/p[1]/span/text()")
-        status_votacao = response.css(".label::text")
-        #conteudo_votacao = response.css("dl.dl-horizontal:nth-child(4) > dd:nth-child(4)::text")
+        if "congressonacional" in response.url:
+            # Informações gerais da votação
+            data_votacao = response.xpath("/html/body/div/section/div[1]/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/div[1]/dl/dd[1]/span/text()")
+            status_votacao = response.xpath("/html/body/div/section/div[1]/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[1]/div[1]/a/span[2]/span/text()")
+        else:
+            # Informações gerais da votação
+            data_votacao = response.xpath("/html/body/div/div[6]/div/div/div/div/div/div/div/div/div/div[2]/div/p[1]/span/text()")
+            status_votacao = response.css(".label::text")
 
         #Informações especificas da votação
         for colunas in response.css("div.row-fluid:nth-child(4)"):
             for votacao in colunas.css(".span4 > table > tbody:nth-child(2) > tr"):
                 items["data_votacao"] = data_votacao.get()
                 items["status_votacao"] = status_votacao.get()
-                #items["conteudo_votacao"] = conteudo_votacao.get()
                 items["parlamentar"] = votacao.css("td:nth-child(2)::text").get()
                 items["voto"] = votacao.css("td:nth-child(3)::text").get()
                 items["obs"] = votacao.css("td:nth-child(4)::text").get()
@@ -56,7 +59,6 @@ class VotacaoItem(scrapy.Item):
 
     data_votacao = scrapy.Field()
     status_votacao = scrapy.Field()
-    #conteudo_votacao = scrapy.Field()
 
     parlamentar = scrapy.Field()
     voto = scrapy.Field()
