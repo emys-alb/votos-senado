@@ -10,7 +10,7 @@ class PaginaSpider(scrapy.Spider):
     start_urls = parse_url(2019, 2023)
     custom_settings = {
         'FEEDS': {
-            'out/votos.csv': {
+            'out/votos-all.csv': {
                 'format': 'csv',
                 'encoding': 'utf8'
             }
@@ -33,19 +33,19 @@ class PaginaSpider(scrapy.Spider):
         items = response.meta['items']
 
         # Informações gerais da votação
-        data_votacao = response.css("#conteudoSessaoPlenaria25602 > div:nth-child(1) > p:nth-child(1) > span:nth-child(2)::text")
+        data_votacao = response.xpath("/html/body/div/div[6]/div/div/div/div/div/div/div/div/div/div[2]/div/p[1]/span/text()")
         status_votacao = response.css(".label::text")
-        conteudo_votacao = response.css("dl.dl-horizontal:nth-child(4) > dd:nth-child(4)::text")
+        #conteudo_votacao = response.css("dl.dl-horizontal:nth-child(4) > dd:nth-child(4)::text")
 
         #Informações especificas da votação
         for colunas in response.css("div.row-fluid:nth-child(4)"):
             for votacao in colunas.css(".span4 > table > tbody:nth-child(2) > tr"):
-                items["data_votacao"]: data_votacao.get()
-                items["status_votacao"]: status_votacao.get()
-                items["conteudo_votacao"]: conteudo_votacao.get()
-                items["parlamentar"] : votacao.css("td:nth-child(2)::text").get()
-                items["voto"] : votacao.css("td:nth-child(3)::text").get()
-                items["obs"] : votacao.css("td:nth-child(4)::text").get()
+                items["data_votacao"] = data_votacao.get()
+                items["status_votacao"] = status_votacao.get()
+                #items["conteudo_votacao"] = conteudo_votacao.get()
+                items["parlamentar"] = votacao.css("td:nth-child(2)::text").get()
+                items["voto"] = votacao.css("td:nth-child(3)::text").get()
+                items["obs"] = votacao.css("td:nth-child(4)::text").get()
 
                 yield items
 
@@ -56,7 +56,7 @@ class VotacaoItem(scrapy.Item):
 
     data_votacao = scrapy.Field()
     status_votacao = scrapy.Field()
-    conteudo_votacao = scrapy.Field()
+    #conteudo_votacao = scrapy.Field()
 
     parlamentar = scrapy.Field()
     voto = scrapy.Field()
