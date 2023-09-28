@@ -35,11 +35,11 @@ class PaginaSpider(scrapy.Spider):
         if "congressonacional" in response.url:
             # Informações gerais da votação
             data_votacao = response.xpath("/html/body/div/section/div[1]/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[1]/div[2]/div/div[1]/div[1]/dl/dd[1]/span/text()")
-            status_votacao = response.xpath("/html/body/div/section/div[1]/div/div/div/div/div/div/div/div/div/div[2]/div/div/div[1]/div[1]/a/span[2]/span/text()")
         else:
             # Informações gerais da votação
             data_votacao = response.xpath("/html/body/div/div[6]/div/div/div/div/div/div/div/div/div/div[2]/div/p[1]/span/text()")
-            status_votacao = response.css(".label::text")
+        
+        status_votacao = response.css(".label::text")
 
         #Informações especificas da votação
         for colunas in response.css("div.row-fluid:nth-child(4)"):
