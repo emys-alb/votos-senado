@@ -1,16 +1,18 @@
 import scrapy
 from scrapy.crawler import CrawlerProcess
+from setting import FILE_NAME_SETTING, INIT_DATE_SETTING, FINISH_DATE_SETTING
 
 def parse_url(start_date, end_date):
-    url = [f"https://www25.senado.leg.br/web/atividade/votacoes-nominais/-/v/periodo/01/01/{start_date}/a/31/12/{end_date}"]
+    url = [f"https://www25.senado.leg.br/web/atividade/votacoes-nominais/-/v/periodo/{start_date}/a/{end_date}"]
     return url
 
+filename = "votos.csv" if FILE_NAME_SETTING is None else FILE_NAME_SETTING
 class PaginaSpider(scrapy.Spider):
-    name = "paginação"
-    start_urls = parse_url(2019, 2023)
+    name = "paginacao"
+    start_urls = parse_url(INIT_DATE_SETTING, FINISH_DATE_SETTING)
     custom_settings = {
         'FEEDS': {
-            'out/votos.csv': {
+            f"out/{filename}": {
                 'format': 'csv',
                 'encoding': 'utf8'
             }
