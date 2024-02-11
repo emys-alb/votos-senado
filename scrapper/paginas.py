@@ -12,10 +12,14 @@ class PaginaSpider(scrapy.Spider):
     name = "paginas"
     start_urls = parse_url(INIT_DATE_SETTING, FINISH_DATE_SETTING)
     custom_settings = {
-        'FEEDS': {
+        "FEEDS": {
             f"../out/{filename}": {
-                'format': 'csv',
-                'encoding': 'utf8'
+                "format": "csv",
+                "encoding": "utf8",
+                "item_export_kwargs": 
+                {
+                    "include_headers_line": False
+                }
             }
         }
     }
